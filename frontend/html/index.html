@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS EC2 & IAM 실습</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AWS EC2 & IAM 실습</h1>
+        <div class="card">
+            <h2>EC2 인스턴스 정보</h2>
+            <div class="info-item">
+                <span>인스턴스 ID:</span>
+                <span id="instance-id">로딩 중...</span>
+            </div>
+            <div class="info-item">
+                <span>리전:</span>
+                <span id="region">로딩 중...</span>
+            </div>
+            <div class="info-item">
+                <span>가용 영역:</span>
+                <span id="availability-zone">로딩 중...</span>
+            </div>
+            <div class="info-item">
+                <span>인스턴스 타입:</span>
+                <span id="instance-type">로딩 중...</span>
+            </div>
+            <button id="refresh-btn">정보 새로고침</button>
+        </div>
+        
+        <div class="card">
+            <h2>IAM 역할 테스트</h2>
+            <p>이 인스턴스에 연결된 IAM 역할로 다른 AWS 서비스에 접근할 수 있는지 테스트합니다.</p>
+            <button id="test-iam-btn">IAM 역할 테스트</button>
+            <div id="iam-result" class="result-box">
+                결과가 여기에 표시됩니다.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>AWS EC2 & IAM 워크샵 - 도커 컨테이너에서 실행 중</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 초기 데이터 로드
+            fetchInstanceData();
+            
+            // 새로고침 버튼
+            document.getElementById('refresh-btn').addEventListener('click', fetchInstanceData);
+            
+            // IAM 테스트 버튼
+            document.getElementById('test-iam-btn').addEventListener('click', testIamRole);
+        });
+        
+        async function fetchInstanceData() {
+            try {
+                const response = await fetch('http://localhost:8080/api/instance-info');
+                if (!response.ok) {
+                    throw new Error('서버 응답 오류');
+                }
+                const data = await response.json();
+                
+                document.getElementById('instance-id').textContent = data.instanceId || 'N/A';
+                document.getElementById('region').textContent = data.region || 'N/A';
+                document.getElementById('availability-zone').textContent = data.availabilityZone || 'N/A';
+                document.getElementById('instance-type').textContent = data.instanceType || 'N/A';
+                
+            } catch (error) {
+                console.error('데이터 가져오기 오류:', error);
+                document.getElementById('instance-id').textContent = '오류 발생';
+                document.getElementById('region').textContent = '오류 발생';
+                document.getElementById('availability-zone').textContent = '오류 발생';
+                document.getElementById('instance-type').textContent = '오류 발생';
+            }
+        }
+        
+        async function testIamRole() {
+            const resultBox = document.getElementById('iam-result');
+            resultBox.innerHTML = '테스트 중...';
+            resultBox.className = 'result-box loading';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/test-iam-role');
+                if (!response.ok) {
+                    throw new Error('서버 응답 오류');
+                }
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultBox.innerHTML = `<p>성공! IAM 역할이 올바르게 구성되었습니다.</p>
+                                          <p>접근 가능한 서비스: ${data.services.join(', ')}</p>`;
+                    resultBox.className = 'result-box success';
+                } else {
+                    resultBox.innerHTML = `<p>IAM 역할 테스트 실패.</p>
+                                          <p>오류: ${data.error}</p>`;
+                    resultBox.className = 'result-box error';
+                }
+                
+            } catch (error) {
+                console.error('IAM 테스트 오류:', error);
+                resultBox.innerHTML = `<p>IAM 테스트 중 오류가 발생했습니다.</p>
+                                      <p>${error.message}</p>`;
+                resultBox.className = 'result-box error';
+            }
+        }
+    </script>
+</body>
+</html>
