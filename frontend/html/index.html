@@ -58,7 +58,7 @@
         
         async function fetchInstanceData() {
             try {
-                const response = await fetch('http://localhost:8080/api/instance-info');
+                const response = await fetch('http://localhost:8080/api/info');
                 if (!response.ok) {
                     throw new Error('서버 응답 오류');
                 }
@@ -84,19 +84,19 @@
             resultBox.className = 'result-box loading';
             
             try {
-                const response = await fetch('http://localhost:8080/api/test-iam-role');
+                const response = await fetch('http://localhost:8080/api/info');
                 if (!response.ok) {
                     throw new Error('서버 응답 오류');
                 }
                 const data = await response.json();
                 
-                if (data.success) {
+                if (data.instanceId && data.instanceId !== '알 수 없음') {
                     resultBox.innerHTML = `<p>성공! IAM 역할이 올바르게 구성되었습니다.</p>
-                                          <p>접근 가능한 서비스: ${data.services.join(', ')}</p>`;
+                                          <p>접근 가능한 서비스: EC2 메타데이터</p>`;
                     resultBox.className = 'result-box success';
                 } else {
                     resultBox.innerHTML = `<p>IAM 역할 테스트 실패.</p>
-                                          <p>오류: ${data.error}</p>`;
+                                          <p>오류: ${data.message || '메타데이터에 접근할 수 없습니다.'}</p>`;
                     resultBox.className = 'result-box error';
                 }
                 
