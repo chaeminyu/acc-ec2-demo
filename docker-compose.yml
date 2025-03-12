@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  frontend:
+    image: chaeminyu/ec2-iam-frontend:latest
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    image: chaeminyu/ec2-iam-backend:latest
+    build: ./backend
+    ports:
+      - "8080:8080"
