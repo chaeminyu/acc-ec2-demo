@@ -17,6 +17,24 @@ import java.time.LocalDateTime;
 @CrossOrigin(origins = "*")
 public class InfoController {
 
+    private String getMetadata(String path) {
+        try {
+            URL url = new URL("http://169.254.169.254/latest/meta-data/" + path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(3000);
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            String result = reader.readLine();
+            reader.close();
+
+            return result;
+        } catch (Exception e) {
+            return "Unknown";
+        }
+    }
+
     @GetMapping("/info")
     public ServerInfo getServerInfo() {
         ServerInfo info = new ServerInfo();
@@ -24,20 +42,26 @@ public class InfoController {
 
         try {
             // EC2 메타데이터에서 인스턴스 ID 가져오기
-            URL url = new URL("http://169.254.169.254/latest/meta-data/instance-id");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(3000);
+            String instanceId = getMetadata("instance-id");
+            String availabilityZone = getMetadata("placement/availability-zone");
+            String instanceType = getMetadata("instance-type");
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()));
-            String instanceId = reader.readLine();
-            reader.close();
+            // 리전은 가용 영역에서 마지막 문자를 제외한 부분
+            String region = "Unknown";
+            if (!availabilityZone.equals("Unknown")) {
+                region = availabilityZone.substring(0, availabilityZone.length() - 1);
+            }
 
             info.setInstanceId(instanceId);
+            info.setRegion(region);
+            info.setAvailabilityZone(availabilityZone);
+            info.setInstanceType(instanceType);
             info.setMessage("EC2 인스턴스에서 성공적으로 데이터를 가져왔습니다!");
         } catch (Exception e) {
             info.setInstanceId("알 수 없음");
+            info.setRegion("알 수 없음");
+            info.setAvailabilityZone("알 수 없음");
+            info.setInstanceType("알 수 없음");
             info.setMessage("EC2 메타데이터에 접근할 수 없습니다: " + e.getMessage());
         }
 
