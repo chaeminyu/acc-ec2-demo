@@ -115,8 +115,7 @@ EOF
 ```
 
 4. Docker Compose를 사용하여 컨테이너를 실행합니다:
-_(참고: docker-compose.yml이 있는 경로, 즉 ec2-iam-workshop 레포에서 실행하셔야 합니다!)
-_
+(참고: docker-compose.yml이 있는 경로, 즉 ec2-iam-workshop 레포에서 실행하셔야 합니다!)
 ```bash
 docker-compose up -d
 ```
