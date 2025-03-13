@@ -62,7 +62,7 @@ docker-compose --version
 
 ## 2. 도커 이미지 가져오기 및 실행하기
 
-1. 제공된 도커 이미지들을 가져옵니다:
+1. 도커 이미지들을 가져옵니다:
 
 ```bash
 docker pull chaeminyu/ec2-iam-frontend:latest
@@ -70,7 +70,7 @@ docker pull chaeminyu/ec2-iam-backend:latest
 
 ```
 
-2. docker-compose.yml 파일을 생성합니다:
+2. docker-compose.yml 파일 생성을 위한 디렉터리를 만들어둡니다
 
 ```bash
 mkdir -p ~/ec2-iam-workshop
@@ -115,7 +115,8 @@ EOF
 ```
 
 4. Docker Compose를 사용하여 컨테이너를 실행합니다:
-
+_(참고: docker-compose.yml이 있는 경로, 즉 ec2-iam-workshop 레포에서 실행하셔야 합니다!)
+_
 ```bash
 docker-compose up -d
 ```
