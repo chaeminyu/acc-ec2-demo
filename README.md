@@ -17,7 +17,7 @@ sudo apt upgrade -y
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
 
 # Docker 공식 GPG 키 추가
-curl -fsSL <https://download.docker.com/linux/ubuntu/gpg> | sudo apt-key add -
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
 # Docker 공식 저장소 추가
 sudo add-apt-repository "deb [arch=amd64] <https://download.docker.com/linux/ubuntu> $(lsb_release -cs) stable"
