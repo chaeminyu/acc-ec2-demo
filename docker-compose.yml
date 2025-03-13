@@ -8,9 +8,19 @@ services:
       - "80:80"
     depends_on:
       - backend
+    networks:
+      - app-network
+    environment:
+      - BACKEND_URL=http://backend:8080
 
   backend:
     image: chaeminyu/ec2-iam-backend:latest
     build: ./backend
     ports:
       - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
